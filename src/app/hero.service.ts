@@ -28,6 +28,15 @@ export class HeroService {
       );
   };
 
+  addHero(hero: Hero): Observable<Hero> {
+    return this.httpClient
+      .post<Hero>(this.HEROES_URL, hero, this.OPTIONS)
+      .pipe(
+        tap((hero: Hero) => this.log(`Added new hero with id = ${hero.id}`)),
+        catchError(this.handleError<Hero>('addHero'))
+      );
+  }
+
   updateHero(hero: Hero): Observable<any> {
     return this.httpClient
       .put(this.HEROES_URL, hero, this.OPTIONS)
