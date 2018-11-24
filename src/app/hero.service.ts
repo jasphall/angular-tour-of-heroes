@@ -28,6 +28,30 @@ export class HeroService {
       );
   };
 
+  getHeroes(): Observable<Hero[]> {
+    return this.httpClient
+      .get<Hero[]>(this.HEROES_URL)
+      .pipe(
+        tap(_ => this.log(`Heroes have been fetched.`)),
+        catchError(this.handleError('getHeroes', []))
+      );
+  }
+
+  searchHeroes(term: string): Observable<Hero[]> {
+    if (!term.trim()) {
+      return of([]);
+    }
+
+    console.log(`Request for term: ${term}`);
+
+    return this.httpClient
+      .get<Hero[]>(`${this.HEROES_URL}?name=${term}`)
+      .pipe(
+        tap(heroes => this.log(`Found ${heroes.length} matching ${term}`)),
+        catchError(this.handleError<Hero[]>('search heroes by id', []))
+      );
+  }
+
   addHero(hero: Hero): Observable<Hero> {
     return this.httpClient
       .post<Hero>(this.HEROES_URL, hero, this.HTTP_OPTIONS)
@@ -53,15 +77,6 @@ export class HeroService {
       .pipe(
         tap(_ => this.log(`Hero with id = ${hero.id} has been deleted.`)),
         catchError(this.handleError<any>(`deleteHero id = ${hero.id}`))
-      );
-  }
-
-  getHeroes(): Observable<Hero[]> {
-    return this.httpClient
-      .get<Hero[]>(this.HEROES_URL)
-      .pipe(
-        tap(_ => this.log(`Heroes have been fetched.`)),
-        catchError(this.handleError('getHeroes', []))
       );
   }
 
