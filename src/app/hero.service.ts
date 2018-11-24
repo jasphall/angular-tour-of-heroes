@@ -11,7 +11,7 @@ import {catchError, tap} from 'rxjs/operators';
 export class HeroService {
 
   private readonly HEROES_URL = '/api/heroes';
-  private readonly OPTIONS = {
+  private readonly HTTP_OPTIONS = {
     headers: new HttpHeaders({ 'Content-type': 'application/json' })
   };
 
@@ -30,7 +30,7 @@ export class HeroService {
 
   addHero(hero: Hero): Observable<Hero> {
     return this.httpClient
-      .post<Hero>(this.HEROES_URL, hero, this.OPTIONS)
+      .post<Hero>(this.HEROES_URL, hero, this.HTTP_OPTIONS)
       .pipe(
         tap((hero: Hero) => this.log(`Added new hero with id = ${hero.id}`)),
         catchError(this.handleError<Hero>('addHero'))
@@ -39,10 +39,20 @@ export class HeroService {
 
   updateHero(hero: Hero): Observable<any> {
     return this.httpClient
-      .put(this.HEROES_URL, hero, this.OPTIONS)
+      .put(this.HEROES_URL, hero, this.HTTP_OPTIONS)
       .pipe(
         tap(_ => this.log(`Hero with id = ${hero.id} has been updated.`)),
         catchError(this.handleError<any>(`updateHero id = ${hero.id}`))
+      );
+  }
+
+  deleteHero(hero: Hero): Observable<any> {
+    const url = `${this.HEROES_URL}/${hero.id}`;
+    return this.httpClient
+      .delete(url, this.HTTP_OPTIONS)
+      .pipe(
+        tap(_ => this.log(`Hero with id = ${hero.id} has been deleted.`)),
+        catchError(this.handleError<any>(`deleteHero id = ${hero.id}`))
       );
   }
 
